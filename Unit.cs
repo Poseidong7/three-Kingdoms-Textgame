@@ -34,6 +34,7 @@ namespace TextRPG
             //외부에서 받은 매개변수를 멤버 변수에 넣음.
             Name = name;
             Job = job;
+            Faction = "재야";
             MaxHp = hp;
             Hp = hp;
             MaxMp = mp;

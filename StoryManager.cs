@@ -6,7 +6,7 @@ namespace TextRPG
     public class StoryManager
     {
         //Unit Player를 여기서 관리하거나 Program에서 받아옴
-        Unit player;
+        Unit? player;
         
         //[핵심]게임의 전체 흐름 총괄
         public void StartStory()
@@ -19,22 +19,6 @@ namespace TextRPG
 
             // 3. 추후 구현
         }
-
-        
-        public void StartStory()
-        {
-            // 1장. 황건적의 난
-            Chapter1_YellowTurban();
-            
-            // 정비 시간
-            //EnterBase();
-
-            // 2장. 반동탁 연합군
-            //Chapter2_DongZhuo();
-
-            // ...추후 추가
-        }
-
 
         // 캐릭터 생성 함수
         void CreatePlayer()
@@ -73,7 +57,7 @@ namespace TextRPG
         void Chapter1_YellowTurban()
             {
             // 텍스트 색상 설정 편의를 위한 변수
-            ConsoleColor defaultColor = ConsoleColor.Gray;
+            //ConsoleColor defaultColor = ConsoleColor.Gray;
             ConsoleColor narratorColor = ConsoleColor.White;
             ConsoleColor playerColor = ConsoleColor.Cyan;
             ConsoleColor liuBeiColor = ConsoleColor.Green;
@@ -96,7 +80,7 @@ namespace TextRPG
             Thread.Sleep(1500);
 
             Console.ForegroundColor = playerColor;
-            Console.WriteLine($"\n[{player.Name}]");
+            Console.WriteLine($"\n[{player!.Name}]");
             Console.WriteLine("\"한탄만 한다고 세상이 바뀌겠소? 나에게도 뜻이 있으니 함께 도모해 봅시다.\"");
             Thread.Sleep(1500);
 
@@ -185,7 +169,7 @@ namespace TextRPG
             
             Console.ForegroundColor = playerColor;
             Console.WriteLine($"\n[{player.Name}]");
-            Console.Write("선택지를 입력하세요 (1. 장비야 참아라 / 2. 쓸어버려라!): ");
+            Console.Write("선택지를 입력하세요 (1. 형님 침착하게 가야합니다! / 2. 같이 쓸어버리시죠!): ");
             Console.Write("선택 >>");
             string choice = Console.ReadLine() ?? "1";
             
@@ -204,7 +188,7 @@ namespace TextRPG
 
             // --[전투 발생!] --
             // 1. 적 생성
-            Unit enemy = new uint("황건적 등무", "도적", 80, 0, 15, 2, 100);
+            Unit enemy = new Unit("황건적 등무", "도적", 80, 0, 15, 2, 100);
             
             // 2. Program에 있는 전투 엔진 가동
             bool isWin = Program.StartBattle(player, enemy);

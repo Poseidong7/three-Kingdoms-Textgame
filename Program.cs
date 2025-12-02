@@ -20,10 +20,25 @@ namespace TextRPG
             story.StartStory(); 
         }
 
+        // [신규 기능] 키보드 입력 통(버퍼) 청소부
+        public static void ClearInputBuffer()
+        {
+            while (Console.KeyAvailable)
+            {
+                Console.ReadKey(true); // 남은 키 입력 읽은 후 삭제
+            }
+        }
+
+
+
+        
+
         // [전투 시스템]
         //Story Manager가 요청하면 그때 실행 (승리 : true / 패배 : false 반환)
         public static bool StartBattle(Unit player, Unit enemy)
         {
+
+            ClearInputBuffer();
             Console.Clear();
             Console.WriteLine("⚠️ 적군과 조우했습니다!");
             Thread.Sleep(1000);
@@ -116,46 +131,6 @@ namespace TextRPG
     }
 }
 
-        // // --- 캐릭터 생성 ---
-        // static void Set_Player()
-        // {
-        //     Console.Clear();
-        //     Console.WriteLine("📜  삼국지 - 천하쟁패 (天下爭覇)  📜");
-        //     Console.WriteLine("난세의 영웅이여, 그대의 이름을 천하에 알리시오.");
-        //     Console.Write("이름을 입력하세요 >>> ");
-        //     string name = Console.ReadLine() ?? "무명";
-
-        //     Console.WriteLine("\n그대의 주특기는 무엇이오?");
-        //     Console.WriteLine("1. 맹장 (猛將) - 무력 중시 (체력↑ 기력↓)");
-        //     Console.WriteLine("2. 책사 (策士) - 지력 중시 (체력↓ 기력↑)");
-        //     Console.Write("선택 : ");
-        //     string jobInput = Console.ReadLine() ?? "1";
-
-        //     int hp = 100; int mp = 50; int atk = 10; int def = 5;
-        //     JobType myJob = JobType.Warlord;
-
-        //     if (jobInput == "1")
-        //     {
-        //         myJob = JobType.Warlord;
-        //         hp = 250; mp = 20; atk = 20; def = 10;
-        //     }
-        //     else if (jobInput == "2")
-        //     {
-        //         myJob = JobType.Strategist;
-        //         hp = 100; mp = 100; atk = 30; def = 3;
-        //     }
-
-        //     player = new Unit(name, myJob, hp, mp, atk, def, 500);
-
-        //     // //[추가] 초기 아이템 지급
-        //     // player.GetItem(new HealthPotion());
-        //     // player.GetItem(new ManaPotion());
-            
-            
-        //     Console.WriteLine($"\n 🚩 '{name}'장군, 출진 완료!");
-        //     Thread.Sleep(1000);
-        // }
-        
         // // --- 본진 (로비) ---
         // static void EnterBase()
         // {
