@@ -9,8 +9,8 @@ namespace TextRPG
     {
         //[1] 멤버 변수 (필드)
         public string Name;     // 장수 이름 (자, 호)
-        public JobType Job;     // 병과 (맹장 / 책사)
-        public Faction MyFaction;   // 소속 세력(위/촉/오/재야)
+        public string Job;     // 병과 (맹장 / 책사)
+        public string Faction;   // 소속 세력(위/촉/오/재야)
 
         public int Hp;      // 병력 (체력)
         public int MaxHp;
@@ -18,7 +18,7 @@ namespace TextRPG
         public int MaxMp;
         public int Atk;     // 무력/지력 (공격력)
         public int Def;     // 통솔 (방어력)
-        public int Gold;   // 군자금(돈)
+        public int Money;   // 군자금(돈)
         public bool IsDead;
 
 
@@ -29,19 +29,18 @@ namespace TextRPG
 
         //[2]생성자
         // : 'new Unit(...)'을 할 때 딱 한 번 실행되는 초기화 함수.
-        public Unit(string name, JobType job, int hp, int mp, int attack, int defense, int gold)
+        public Unit(string name, string job, int hp, int mp, int attack, int defense, int money)
         {
             //외부에서 받은 매개변수를 멤버 변수에 넣음.
             Name = name;
             Job = job;
-            MyFaction = Faction.None; // 처음엔 무소속 재야 장수로
             MaxHp = hp;
             Hp = hp;
             MaxMp = mp;
             Mp = mp;
             Atk = attack;
             Def = defense;
-            Gold = gold;
+            Money = money;
             IsDead = false;
         }
 

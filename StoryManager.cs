@@ -8,12 +8,19 @@ namespace TextRPG
         //Unit Player를 여기서 관리하거나 Program에서 받아옴
         Unit player;
         
-        public StoryManager(Unit _player)
+        //[핵심]게임의 전체 흐름 총괄
+        public void StartStory()
         {
-            player = _player;
+            // 1. 오프닝 & 캐릭터 생성
+            CreatePlayer();
+
+            // 2. 1장 시작
+            Chapter1_YellowTurban();
+
+            // 3. 추후 구현
         }
 
-        //[핵심]게임의 전체 흐름 총괄
+        
         public void StartStory()
         {
             // 1장. 황건적의 난
@@ -27,6 +34,39 @@ namespace TextRPG
 
             // ...추후 추가
         }
+
+
+        // 캐릭터 생성 함수
+        void CreatePlayer()
+        {
+            Console.Clear();
+            Console.WriteLine("📜  삼국지 - 천하쟁패 (天下爭覇)  📜");
+            Console.WriteLine("난세의 영웅이여, 그대의 이름을 천하에 알리시오.");
+            Console.Write("이름 (자) 입력 >> ");
+            string name = Console.ReadLine() ?? "무명";
+
+            Console.WriteLine("\n그대의 주특기는 무엇이오?");
+            Console.WriteLine("1. 맹장 (猛將) - 무력 중시");
+            Console.WriteLine("2. 책사 (策士) - 지력 중시");
+            Console.Write("선택 : ");
+            string jobInput = Console.ReadLine() ?? "1";
+
+            string job = "의용군";
+            int hp=100, mp=50, atk=10, def=5;
+
+            if (jobInput == "1") { job = "전사"; hp = 200; mp = 30; atk = 20; }
+            else if (jobInput == "2") { job = "마법사"; hp = 100; mp = 100; atk = 30; def = 2; }
+
+            // 플레이어 객체 생성
+            player = new Unit(name, job, hp, mp, atk, def, 500);
+            
+            // 초기 아이템 지급
+            player.GetItem(new HealthPotion());
+
+            Console.WriteLine($"\n🚩 '{player.Name}' 장군, 출진 준비 완료!");
+            Thread.Sleep(1000);
+        }
+        
 
 
         // --- 챕터 1 : 황건적의 난 ---
@@ -107,13 +147,13 @@ namespace TextRPG
             Thread.Sleep(1000);
             Console.WriteLine("다음 날, 장비의 집 뒤편 복숭아 밭에는 꽃이 만발했습니다.");
             Thread.Sleep(1000);
-            Console.WriteLine("검은 소와 흰 말을 제물로 바치고, 네 사람은 향을 피웁니다.");
+            Console.WriteLine("검은 소와 흰 말을 제물로 바치고, 세 사람은 향을 피웁니다.");
             Thread.Sleep(2000);
 
             Console.ForegroundColor = ConsoleColor.Magenta; // 중요한 맹세
             Console.WriteLine("\n[도원결의(桃園結義)]");
             Thread.Sleep(1000);
-            Console.WriteLine("\"유비, 관우, 장비, 그리고 " + player.Name + "..\"");
+            Console.WriteLine("\"유비, 관우, 장비, 그리고 당신은 옆에서 그들을 지켜봅니다.\"");
             Thread.Sleep(1000);
             Console.WriteLine("\"비록 성은 다르오나 의형제를 맺어, 힘을 합쳐 곤경에 빠진 백성을 구하려 하오니..\"");
             Thread.Sleep(1500);
@@ -124,7 +164,7 @@ namespace TextRPG
 
             Console.ResetColor();
             Console.WriteLine("\n==================================================");
-            Console.WriteLine("시스템: 유비, 관우, 장비와 '의형제'가 되었습니다.");
+            Console.WriteLine("시스템: 유비, 관우, 장비와 합류 하였습니다.");
             Console.WriteLine("시스템: 의용군 500명이 모였습니다.");
             Console.WriteLine("==================================================");
             Thread.Sleep(2000);
@@ -146,8 +186,40 @@ namespace TextRPG
             Console.ForegroundColor = playerColor;
             Console.WriteLine($"\n[{player.Name}]");
             Console.Write("선택지를 입력하세요 (1. 장비야 참아라 / 2. 쓸어버려라!): ");
+            Console.Write("선택 >>");
+            string choice = Console.ReadLine() ?? "1";
             
-            // 여기서부터는 게임 로직(Input)으로 이어지면 됩니다.
+            if (choice == "2")
+            {
+                Console.WriteLine("\n>>> 당신은 장비와 함께 적진으로 돌격합니다!");
+            }
+
+            else
+            {
+                Console.WriteLine("\n>>> 신중하게 접근하려 했으나, 적이 먼저 공격해옵니다!");
+            }
+            
+            Thread.Sleep(1000);
+            
+
+            // --[전투 발생!] --
+            // 1. 적 생성
+            Unit enemy = new uint("황건적 등무", "도적", 80, 0, 15, 2, 100);
+            
+            // 2. Program에 있는 전투 엔진 가동
+            bool isWin = Program.StartBattle(player, enemy);
+            
+            // 3. 결과에 따른 분기
+            if (isWin)
+            {
+                Console.WriteLine("\n[승리] 황건적 부장, 등무가 목이 날아갔습니다. 당신의 명성이 상승합니다!");
+                // 다음 챕터...
+            }
+            else
+            {
+                Console.WriteLine("\n[패배] 부상을 입고 퇴각했습니다... (게임 오버)");
+                Environment.Exit(0);
+            }
         }
     }
 }
