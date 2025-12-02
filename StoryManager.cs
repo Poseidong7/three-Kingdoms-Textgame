@@ -35,14 +35,22 @@ namespace TextRPG
             Console.Write("선택 : ");
             string jobInput = Console.ReadLine() ?? "1";
 
-            string job = "의용군";
+            JobType myJob = JobType.Warlord;
             int hp=100, mp=50, atk=10, def=5;
 
-            if (jobInput == "1") { job = "전사"; hp = 200; mp = 30; atk = 20; }
-            else if (jobInput == "2") { job = "마법사"; hp = 100; mp = 100; atk = 30; def = 2; }
+            if (jobInput == "1")
+            {
+                myJob = JobType.Warlord;
+                hp = 250; mp = 20; atk = 20; def = 10;
+            }
+            else if (jobInput == "2")
+            {
+                myJob = JobType.Strategist;
+                hp = 100; mp = 100; atk = 30; def = 3;
+            }
 
             // 플레이어 객체 생성
-            player = new Unit(name, job, hp, mp, atk, def, 500);
+            player = new Unit(name, myJob, hp, mp, atk, def, 500);
             
             // 초기 아이템 지급
             player.GetItem(new HealthPotion());
@@ -188,10 +196,10 @@ namespace TextRPG
 
             // --[전투 발생!] --
             // 1. 적 생성
-            Unit enemy = new Unit("황건적 등무", "도적", 80, 0, 15, 2, 100);
+            Unit enemy = new Unit("황건적 등무", JobType.Warlord, 80, 0, 15, 2, 100);
             
             // 2. Program에 있는 전투 엔진 가동
-            bool isWin = Program.StartBattle(player, enemy);
+            bool isWin = Program.StartBattle(player!, enemy);
             
             // 3. 결과에 따른 분기
             if (isWin)

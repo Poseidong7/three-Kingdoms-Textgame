@@ -74,8 +74,8 @@ namespace TextRPG
                 }
                 else if (input == "2")
                 {
-                    if (player.Job == "전사") player.UseSkill(skill_1, enemy);
-                    else if (player.Job == "마법사") player.UseSkill(skill_2, enemy);
+                    if (player.job == JobType.Warlord) player.UseSkill(skill_1, enemy);
+                    else if (player.job == JobType.Strategist) player.UseSkill(skill_2, enemy);
                     else player.Attack(enemy); // 직업 없으면 평타
                 }
                 
