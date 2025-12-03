@@ -14,6 +14,9 @@ namespace TextRPG
             // 1. 텍스트 깨짐 방지
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.InputEncoding = System.Text.Encoding.UTF8;
+
+            //[추가] 가챠 데이터 로딩
+            GachaManager.LoadData();
             
             // 2. Program은 준비만 하고 실제 진행은 story~에게 넘김
             StoryManager story = new StoryManager();

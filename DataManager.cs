@@ -8,10 +8,11 @@ namespace TextRPG
     // 1. 저장용 데이터 설계도 (Save File의 형태)
     public class PlayerData
     {
-        public string Name {get; set; }
+        public string Name {get; set; } = "";
         public JobType Job {get; set; }
         public int Level {get; set; }
         public int Exp { get; set; }
+        public Rank rank {get; set; }
         public int Hp { get; set; }
         public int MaxHp { get; set; }
         public int Mp { get; set; }
@@ -35,6 +36,7 @@ namespace TextRPG
             PlayerData data = new PlayerData();
             data.Name = player.Name;
             data.Job = player.Job;
+            data.rank = player.MyRank;
             data.Level = player.Level;
             data.Exp = player.Exp;
             data.Hp = player.Hp;
@@ -66,7 +68,7 @@ namespace TextRPG
         public static Unit? Load()
         {
             // 1. 파일이 없으면 실패
-            if (!file.Exists(fileName))
+            if (!File.Exists(fileName))
             {
                 return null;
             }
@@ -80,7 +82,7 @@ namespace TextRPG
             if (data == null) return null;
 
             // 4. 저장된 데이터로 실제 Unit 생성
-            Unit loadedPlayer = new Unit(data.Name, data.Job, data.MaxHp, data.MaxMp, data.Atk, data.Def, data.Money);
+            Unit loadedPlayer = new Unit(data.Name, data.Job, data.rank, data.MaxHp, data.MaxMp, data.Atk, data.Def, data.Money);
 
             // 레벨과 경험치, 현재 체력 복구
             loadedPlayer.Level = data.Level;

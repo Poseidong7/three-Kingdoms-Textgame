@@ -11,6 +11,7 @@ namespace TextRPG
         public string Name;     // 장수 이름 (자, 호)
         public JobType Job;     // 병과 (맹장 / 책사)
         public Faction MyFaction;   // 소속 세력(위/촉/오/재야)
+        public Rank MyRank; //[추가 장수 등급]
 
         //[신규] 레벨 시스템
         public int Level;   //현재 레벨
@@ -33,12 +34,13 @@ namespace TextRPG
 
         //[2]생성자
         // : 'new Unit(...)'을 할 때 딱 한 번 실행되는 초기화 함수.
-        public Unit(string name, JobType job, int hp, int mp, int attack, int defense, int money)
+        public Unit(string name, JobType job, Rank rank, int hp, int mp, int attack, int defense, int money)
         {
             //외부에서 받은 매개변수를 멤버 변수에 넣음.
             Name = name;
             Job = job;
             MyFaction = Faction.None; //기본은 재야
+            MyRank = rank; //[추가]
 
             //[신규] 레벨 초기화 (1레벨, 경험치 0, 필요경험치 100)
             Level = 1;
@@ -163,7 +165,7 @@ namespace TextRPG
             else if (typeMultiplier < 1.0f) effectMsg = "(우리 병과의 약점이 들어나고 있다... 💥)";            
 
             // 4. 공격 메시지 출력 및 연출
-            Console.WriteLine($"\n⚔️ {Name}의 공격! 상대의 병력에 타격을 줍니다!");
+            Console.WriteLine($"\n⚔️ {Name}의 공격! {effectMsg}");
             Thread.Sleep(500); //0.5초 딜레이 (타격감)
 
             // 5. 상대방에게 데미지 입게 명령.

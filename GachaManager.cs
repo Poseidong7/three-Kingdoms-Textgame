@@ -34,14 +34,14 @@ namespace TextRPG
 
 
         // 2. 뽑기 (비용을 지불하고 랜덤 장수 획득)
-        public static void Roll(Unit player)
+        public static Unit? Roll(Unit player)
         {
             int cost = 100; //뽑기 비용
             
             if (player.Money < cost)
             {
                 Console.WriteLine($"🚫 돈이 부족합니다! (필요: {cost} / 보유: {player.Money})");
-                return;
+                return null; //돈 없으면 꽝
             }
             
             player.Money -= cost;
@@ -55,19 +55,30 @@ namespace TextRPG
             //데이터 파싱 (문자열 -> Enum 변환)
             string name = pick[0];
             JobType job = (JobType)Enum.Parse(typeof(JobType), pick[1]);
-            string rank = pick[2];
+            Rank rank = (Rank)Enum.Parse(typeof(Rank), pick[2]); //[추가] 등급 파싱
             string desc = pick[3];
 
             //결과 연출
             Console.Clear();
             Console.WriteLine("🛖 주막에 들어갑니다... 두구두구...");
             Thread.Sleep(1000);
+            
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"\n✨ [{rank}] {job} '{name}' 등용 성공!");
-            Console.WriteLine($"   🎉\"{desc}\"🎉");
-
-
-            //나중에 동로 영입 로직 추가
+            Console.ResetColor();
+            Console.WriteLine($"   💬 \"{desc}\"");
             Thread.Sleep(1000);
+
+            // [핵심] 뽑은 데이터로 실제 Unit 객체 생성! (스탯은 임의 설정) < 추후 개선
+            // 나중에 csv에 스탯도 넣으면 좋음
+            int hp = 100, atk = 10, def = 5;
+            if (rank == Rank.SSR) {hp = 150; atk = 30; }
+            else if (rank == Rank.SR) {hp = 150; atk = 20; }
+
+            Unit newColleague = new Unit(name, job, rank, hp, 50, atk, def, 0);
+            
+            return newColleague; // 뽑은 장수를 배달.
+
             
         }
     }

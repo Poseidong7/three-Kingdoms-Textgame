@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.Contracts;
 using System.Threading;
 
 namespace TextRPG
@@ -8,7 +9,10 @@ namespace TextRPG
         //Unit Player를 여기서 관리하거나 Program에서 받아옴
         Unit? player;
 
-        //[신규] 스마트 Sleep 함수
+        //[신규] 동료 명단 (리스트)
+        public List<Unit> colleagues = new List<Unit>();
+
+        //스마트 Sleep 함수
         //설정된 배율에 따라 대기 시간을 자동으로 조절.
         void Sleep(int milliseconds)
         {
@@ -16,7 +20,7 @@ namespace TextRPG
             Thread.Sleep(finalTime);
         }
 
-        //[신규] 게임 시작 전 속도 설정 메뉴
+        //게임 시작 전 속도 설정 메뉴
         void SetupGame()
         {
             Console.Clear();
@@ -46,12 +50,39 @@ namespace TextRPG
             // [추가] 이어하기 확인
             Console.WriteLine("1. 새로 시작  2. 이어하기");
             string choice = Console.ReadLine() ?? "1";
+            
+            // 이어하기 선택시
+            if (choice == "2")
+            {
+                //데이터 매니저에게 저장된 데이터 요청
+                Unit? loadedPlayer = DataManager.Load();
+
+                if (loadedPlayer != null)
+                {
+                    //불러오기 성공
+                    player = loadedPlayer; //주인공 교체
+                    Console.WriteLine($"\n반갑습니다, {player.Name} 장군! 여정을 계속합니다.");
+                    Thread.Sleep(1000);
+
+                    //[추후 수정] 오프닝 건너뛰고 바로 마을로 이동
+                    EnterBase();
+                    return;
+                }
+                else
+                {
+                    //파일이 없으면 실패 메세지 띄우고 새로시작
+                    Console.WriteLine("\n❌ 저장된 파일이 없습니다. 새로 시작합니다.");
+                    Thread.Sleep(1000);
+                }
+            }
 
             // 1. 오프닝 & 캐릭터 생성
             CreatePlayer();
 
             // 2. 1장 시작
             Opening_TaverBrawl();
+
+            EnterBase();
 
             // 3. 추후 구현
         }
@@ -85,7 +116,7 @@ namespace TextRPG
             else if (jobInput == "5") { myJob = JobType.Tactician; hp=100; mp=100; atk=10; def=2; }
 
             // 플레이어 객체 생성
-            player = new Unit(name, myJob, hp, mp, atk, def, 500);
+            player = new Unit(name, myJob, Rank.N, hp, mp, atk, def, 500);
             
             // 초기 아이템 지급
             player.GetItem(new HealthPotion());
@@ -175,7 +206,7 @@ namespace TextRPG
 
             //[실제 전투 연결]
             //튜토리얼용 적 생성
-            Unit tutorialEnemy = new Unit("황건적 조장", JobType.Bandit, 30, 0, 5, 0, 50);
+            Unit tutorialEnemy = new Unit("황건적 조장", JobType.Bandit, Rank.N, 30, 0, 5, 0, 50);
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("\n>>> 전투가 시작됩니다!");
@@ -193,6 +224,10 @@ namespace TextRPG
                 Sleep(1000);
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine("\n[시스템] 첫 번째 동료 [단복(협객)]과 인연을 맺었습니다.");
+
+                //단복 생성 후 리스트에 추가
+                Unit danbok = new Unit("단복", JobType.Tactician, Rank.R, 80, 20, 15, 5, 0);
+                colleagues.Add(danbok); //영입
                 Sleep(2000);
             }
 
@@ -207,7 +242,7 @@ namespace TextRPG
 
 
         //[마을 로직] > 추후 개선 예정
-        
+
         // --- [2] 본진 (마을) 시스템 ---
         void EnterBase()
         {
@@ -215,12 +250,15 @@ namespace TextRPG
             {
                 Console.Clear();
                 Console.WriteLine("======== [⛺ 본진] ========");
-                Console.WriteLine($"현재 위치 : 낙양 근교 (소속: {player!.Faction})");
+                Console.WriteLine($"현재 위치 : 낙양 근교");
                 Console.WriteLine("1. ⚔️ 전장으로 (반복 사냥)");
                 Console.WriteLine("2. 🛌 막사 휴식 (병력 및 기력 회복)");
                 Console.WriteLine("3. 📊 장수 정보 확인");
                 Console.WriteLine("4. 🎒 가방 열기");
-                Console.WriteLine("5. 🚪 다음 스토리 진행 (출진)");
+                Console.WriteLine("5. 🍺 주막 (장수 등용 - 100금)"); 
+                Console.WriteLine("6. 👥 동료 관리"); // [신규]
+                Console.WriteLine("7. 💾 저장하기"); 
+                Console.WriteLine("8. 🚪 다음 스토리 진행"); // 번호 밀림
                 Console.WriteLine("====================");
                 Console.Write("무엇을 하시겠소? >> ");
                 
@@ -233,11 +271,11 @@ namespace TextRPG
                     Thread.Sleep(1000);
                     
                     // 랜덤 적 생성 (연습용 황건적)
-                    Unit dummyEnemy = new Unit("황건적 잔당", JobType.Bandit, 50, 0, 10, 1, 30);
+                    Unit dummyEnemy = new Unit("황건적 잔당", JobType.Bandit, Rank.N, 50, 0, 10, 1, 30);
                     
                     bool win = Program.StartBattle(player!, dummyEnemy);
                     if (win) Console.WriteLine("승리하여 복귀했습니다.");
-                    else { Console.WriteLine("부상을 입고 복귀했습니다."); player.Hp = 1; } // 죽지 않게 처리
+                    else { Console.WriteLine("부상을 입고 복귀했습니다."); player!.Hp = 1; } // 죽지 않게 처리
                 }
                 else if (input == "2")
                 {
@@ -251,7 +289,29 @@ namespace TextRPG
                 {
                     Open_Inventory(); // 가방 열기
                 }
+
                 else if (input == "5")
+                {
+                    Unit? newUnit = GachaManager.Roll(player!); //가챠 실행 결과 받기
+                    
+                    // 뽑았으면 리스트에 넣기
+                    if (newUnit != null)
+                    {
+                        colleagues.Add(newUnit);
+                        //나중에 중복체크 로직 추가 예정
+                    }
+                }
+
+                else if (input == "6")
+                {
+                    ManageColleagues(); //동료 관리 함수 호출
+                }
+                else if (input == "7")
+                {
+                    DataManager.Save(player!); //[추가] 저장 연결 -> 추후 수정 요망
+                }
+
+                else if (input == "8")
                 {
                     Console.WriteLine("군비를 갖추고 다음 전장으로 떠납니다!");
                     Thread.Sleep(1000);
@@ -296,7 +356,7 @@ namespace TextRPG
         {
             Console.Clear();
             Console.WriteLine($"\n [ {player!.Name}의 상태 ]");
-            Console.WriteLine($"소속 : {player.Faction} | 병과 : {player.Job}");
+            Console.WriteLine($"소속 : {Faction.None} | 병과 : {player.Job}");
             Console.WriteLine($"❤️  병력 : {player.Hp} / {player.MaxHp}");
             Console.WriteLine($"💧  기력 : {player.Mp} / {player.MaxMp}");
             Console.WriteLine($"⚔️  무력 : {player.Atk}");
@@ -340,7 +400,26 @@ namespace TextRPG
             Thread.Sleep(500);
         }
         
-        
+        //[신규] 동료 목록 보여주기
+        void ManageColleagues()
+        {
+            Console.Clear();
+            Console.WriteLine("=== [ 👥 동료 목록 ] ===");
 
+            if (colleagues.Count == 0)
+            {
+                Console.WriteLine("(아직 동료가 없습니다.)");
+            }
+            else
+            {
+                for (int i = 0; i < colleagues.Count; i++)
+                {
+                    Unit u = colleagues[i];
+                    Console.WriteLine($"{i+1}. [{u.MyRank}] {u.Name} ({u.Job}) - HP:{u.Hp}");                }
+            }
+            
+            Console.WriteLine("\n(엔터 키를 누르면 돌아갑니다)");
+            Console.ReadLine();
+        }
     }
 }
