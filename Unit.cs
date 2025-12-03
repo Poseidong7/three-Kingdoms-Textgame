@@ -9,7 +9,7 @@ namespace TextRPG
     {
         //[1] 멤버 변수 (필드)
         public string Name;     // 장수 이름 (자, 호)
-        public JobType job;     // 병과 (맹장 / 책사)
+        public JobType Job;     // 병과 (맹장 / 책사)
         public Faction MyFaction;   // 소속 세력(위/촉/오/재야)
 
         public int Hp;      // 병력 (체력)
@@ -46,20 +46,47 @@ namespace TextRPG
         }
 
         // [3] 행동(매서드)
+        //[핵심] 상성 데미지 보정 함수(캡슐화)
+        // 외부에는 안 보여주고, Attack 함수 안에서만 사용.
+        public float GetTypeMultiplier(JobType targetJob)
+        {
+            if (this.Job == JobType.Tactician || targetJob == JobType.Tactician) return 1.0f; //책사는 무상성
+            
+            // 가위바위보 로직 (기병 > 보병 > 궁병 > 창병 > 기병)
+            if (this.Job == JobType.Cavalry && targetJob == JobType.Infantry) return 1.5f;
+            if (this.Job == JobType.Infantry && targetJob == JobType.Archer) return 1.5f;
+            if (this.Job == JobType.Archer && targetJob == JobType.Spearman) return 1.5f;
+            if (this.Job == JobType.Spearman && targetJob == JobType.Cavalry) return 1.5f;
+
+            // 반대 경우(열세)
+            if (this.Job == JobType.Infantry && targetJob == JobType.Cavalry) return 0.8f;
+            if (this.Job == JobType.Archer && targetJob == JobType.Infantry) return 0.8f;
+            if (this.Job == JobType.Spearman && targetJob == JobType.Archer) return 0.8f;
+            if (this.Job == JobType.Cavalry && targetJob == JobType.Spearman) return 0.8f;
+
+            return 1.0f; //그 외는 1배
+        }
+
+
         // 공격 기능 : 내가(this) 상대방(target)을 공격
         public void Attack(Unit target)
         {
             Random rand = new Random();
-            
-            // 1. 랜덤 데미지 계산(공격력의 90 ~ 110%)
             float variance = rand.Next(90, 111) / 100.0f; // 0.9 ~ 1.1 배율 생성
-            int finalAtk = (int)(this.Atk * variance); // 최종뎀 계산
 
-            // 2. 데미지 공식 : (최종뎀) - (상대 방어력)
+            // 1. 상성 배율 가져오기
+            float typeMultiplier = GetTypeMultiplier(target.Job);
+
+            // 2. 최종 공격력 계산 (기본공격력 * 랜덤배율 * 상성배율)
+            int finalAtk = (int)(this.Atk * variance * typeMultiplier);
+
             int damage = finalAtk - target.Def;
-
-            // 3. 최소 데미지 보정(방어력이 아무리 높아도 최소 1은 달게 함.)
             if (damage < 1) damage = 1;
+
+            // 3. 연출(상성에 따라 멘트 다르게)
+            string effectMsg = "";
+            if (typeMultiplier > 1.0f) effectMsg = "(상대 병과의 약점을 파고 들었다! 🔥)";
+            else if (typeMultiplier < 1.0f) effectMsg = "(우리 병과의 약점이 들어나고 있다... 💥)";            
 
             // 4. 공격 메시지 출력 및 연출
             Console.WriteLine($"\n⚔️ {Name}의 공격! 상대의 병력에 타격을 줍니다!");

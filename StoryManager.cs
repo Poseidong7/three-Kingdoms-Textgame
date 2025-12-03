@@ -29,25 +29,24 @@ namespace TextRPG
             Console.Write("이름 (자) 입력 >> ");
             string name = Console.ReadLine() ?? "무명";
 
-            Console.WriteLine("\n그대의 주특기는 무엇이오?");
-            Console.WriteLine("1. 맹장 (猛將) - 무력 중시");
-            Console.WriteLine("2. 책사 (策士) - 지력 중시");
+            Console.WriteLine("\n그대의 병과를 선택하시오:");
+            Console.WriteLine("1. 기병 🐎 (이동속도 빠름, 보병에 강함)");
+            Console.WriteLine("2. 보병 🛡️ (방어력 높음, 궁병에 강함)");
+            Console.WriteLine("3. 궁병 🏹 (원거리, 창병에 강함)");
+            Console.WriteLine("4. 창병 🔱 (공격력 높음, 기병에 강함)");
+            Console.WriteLine("5. 책사 📜 (계략 중심)");
             Console.Write("선택 : ");
             string jobInput = Console.ReadLine() ?? "1";
 
-            JobType myJob = JobType.Warlord;
+            JobType myJob = JobType.Infantry; //기본 보병
             int hp=100, mp=50, atk=10, def=5;
 
-            if (jobInput == "1")
-            {
-                myJob = JobType.Warlord;
-                hp = 250; mp = 20; atk = 20; def = 10;
-            }
-            else if (jobInput == "2")
-            {
-                myJob = JobType.Strategist;
-                hp = 100; mp = 100; atk = 30; def = 3;
-            }
+            // 밸런스 조절 (예시)
+            if (jobInput == "1") { myJob = JobType.Cavalry; hp=180; atk=25; def=5; }
+            else if (jobInput == "2") { myJob = JobType.Infantry; hp=250; atk=15; def=15; }
+            else if (jobInput == "3") { myJob = JobType.Archer; hp=120; atk=30; def=2; }
+            else if (jobInput == "4") { myJob = JobType.Spearman; hp=150; atk=28; def=8; }
+            else if (jobInput == "5") { myJob = JobType.Tactician; hp=100; mp=100; atk=10; def=2; }
 
             // 플레이어 객체 생성
             player = new Unit(name, myJob, hp, mp, atk, def, 500);
@@ -196,7 +195,7 @@ namespace TextRPG
 
             // --[전투 발생!] --
             // 1. 적 생성
-            Unit enemy = new Unit("황건적 등무", JobType.Warlord, 80, 0, 15, 2, 100);
+            Unit enemy = new Unit("황건적 등무", JobType.Infantry, 80, 0, 15, 2, 100);
             
             // 2. Program에 있는 전투 엔진 가동
             bool isWin = Program.StartBattle(player!, enemy);

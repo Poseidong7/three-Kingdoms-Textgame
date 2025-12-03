@@ -44,8 +44,7 @@ namespace TextRPG
             Thread.Sleep(1000);
             
             //스킬 목록 준비(임시)
-            ISkill skill_1 = new Skill_Smash();
-            ISkill skill_2 = new Skill_Fireball();
+
 
             Console.WriteLine("대화 수정 요망");
             Thread.Sleep(1000);
@@ -74,9 +73,7 @@ namespace TextRPG
                 }
                 else if (input == "2")
                 {
-                    if (player.job == JobType.Warlord) player.UseSkill(skill_1, enemy);
-                    else if (player.job == JobType.Strategist) player.UseSkill(skill_2, enemy);
-                    else player.Attack(enemy); // 직업 없으면 평타
+                    Console.WriteLine("아직 미구현");
                 }
                 
                 else if (input == "3")
