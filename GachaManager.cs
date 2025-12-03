@@ -20,7 +20,7 @@ namespace TextRPG
             }
 
             //파일의 모든 줄을 읽어옴
-            string[] lines = File.ReadAllLines("Warlords.cvs");
+            string[] lines = File.ReadAllLines("Warlords.csv");
 
             foreach (string line in lines)
             {

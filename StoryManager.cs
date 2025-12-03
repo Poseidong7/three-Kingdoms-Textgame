@@ -7,15 +7,51 @@ namespace TextRPG
     {
         //Unit Player를 여기서 관리하거나 Program에서 받아옴
         Unit? player;
-        
+
+        //[신규] 스마트 Sleep 함수
+        //설정된 배율에 따라 대기 시간을 자동으로 조절.
+        void Sleep(int milliseconds)
+        {
+            int finalTime = (int)(milliseconds * GameSettings.TextSpeedMultiplier);
+            Thread.Sleep(finalTime);
+        }
+
+        //[신규] 게임 시작 전 속도 설정 메뉴
+        void SetupGame()
+        {
+            Console.Clear();
+            Console.WriteLine("⚙️ 게임 설정을 진행합니다.");
+            Console.WriteLine("\n[텍스트 속도 설정]");
+            Console.WriteLine("1. 느림 (여유롭게)");
+            Console.WriteLine("2. 보통 (추천)");
+            Console.WriteLine("3. 빠름 (한국인)");
+            Console.Write("선택 >> ");
+
+            string input = Console.ReadLine() ?? "2";
+
+            if (input == "1") GameSettings.SetTextSpeed(GameSettings.SpeedOption.Slow);
+            else if (input == "3") GameSettings.SetTextSpeed(GameSettings.SpeedOption.Fast);
+            else GameSettings.SetTextSpeed(GameSettings.SpeedOption.Normal);
+
+            Console.WriteLine("\n설정이 완료되었습니다. 게임을 시작합니다...");
+            Thread.Sleep(1000); //여기는 고정 시간 (설정 적용 전)
+        }
+
         //[핵심]게임의 전체 흐름 총괄
         public void StartStory()
         {
+            // 0. 게임 설정
+            SetupGame();
+
+            // [추가] 이어하기 확인
+            Console.WriteLine("1. 새로 시작  2. 이어하기");
+            string choice = Console.ReadLine() ?? "1";
+
             // 1. 오프닝 & 캐릭터 생성
             CreatePlayer();
 
             // 2. 1장 시작
-            Chapter1_YellowTurban();
+            Opening_TaverBrawl();
 
             // 3. 추후 구현
         }
@@ -57,160 +93,254 @@ namespace TextRPG
             Console.WriteLine($"\n🚩 '{player.Name}' 장군, 출진 준비 완료!");
             Thread.Sleep(1000);
         }
+
         
 
-
-        // --- 챕터 1 : 황건적의 난 ---
-        void Chapter1_YellowTurban()
+        // --- [오프닝 : 폭풍 전야의 술잔] ---
+        void Opening_TaverBrawl()
             {
-            // 텍스트 색상 설정 편의를 위한 변수
-            //ConsoleColor defaultColor = ConsoleColor.Gray;
-            ConsoleColor narratorColor = ConsoleColor.White;
+            ConsoleColor narrator = ConsoleColor.Gray;
+            ConsoleColor enemyColor = ConsoleColor.DarkYellow;
+            ConsoleColor allyColor = ConsoleColor.Green;
             ConsoleColor playerColor = ConsoleColor.Cyan;
-            ConsoleColor liuBeiColor = ConsoleColor.Green;
-            ConsoleColor zhangFeiColor = ConsoleColor.Yellow;
-            ConsoleColor guanYuColor = ConsoleColor.Red;
 
-            // [이전 상황에서 이어짐]
-            Console.ForegroundColor = narratorColor;
-            Console.WriteLine("\n[내레이션]");
-            Console.WriteLine("그 남자는 당신의 인기척에 황급히 눈물을 훔치며 고개를 듭니다.");
-            Thread.Sleep(1500);
+            Console.Clear();
+            Console.ForegroundColor = narrator;
+            Console.WriteLine("서기 184년 초봄..");
+            Sleep(1000);
+            Console.WriteLine("탁군(涿郡) 외곽의 허름한 객잔.");
+            Sleep(1000);
+            Console.WriteLine("국경 지대에는 흉흉한 소문만이 안개처럼 떠돌고 있습니다.");
+            Sleep(1500);
 
-            Console.ForegroundColor = liuBeiColor;
-            Console.WriteLine("\n[???]");
-            Console.WriteLine("\"실례를 범했소. 저는 유비, 자는 현덕이라 하오.\"");
-            Thread.Sleep(1000);
-            Console.WriteLine("\"황건적의 무리가 천하를 어지럽히는데, 힘은 없고 나이는 먹어가니..\"");
-            Thread.Sleep(1000);
-            Console.WriteLine("\"그저 한탄만 하고 있었을 뿐입니다.\"");
-            Thread.Sleep(1500);
-
+            Console.WriteLine($"\n[{player!.Name}]"); // 실제 플레이어 이름 사용
             Console.ForegroundColor = playerColor;
-            Console.WriteLine($"\n[{player!.Name}]");
-            Console.WriteLine("\"한탄만 한다고 세상이 바뀌겠소? 나에게도 뜻이 있으니 함께 도모해 봅시다.\"");
-            Thread.Sleep(1500);
+            Console.WriteLine("(탁한 술잔을 기울이며...)");
+            Console.WriteLine("\"세상이 곧 뒤집어질 것 같군.. 피 냄새가 바람에 실려와.\"");
+            Sleep(2000);
 
-            Console.ForegroundColor = narratorColor;
-            Console.WriteLine("\n그때였습니다. 장터 뒤쪽에서 우레와 같은 고함 소리가 들려옵니다.");
-            Thread.Sleep(500);
-            Console.WriteLine("마치 호랑이 수염을 가진듯한 거한이 성큼성큼 다가옵니다.");
-            Thread.Sleep(1500);
+            // [사건 발생]
+            Console.ForegroundColor = enemyColor;
+            Console.WriteLine("\n[쾅!!]");
+            Sleep(300);
+            Console.WriteLine("\n[황건적 조장]");
+            Console.WriteLine("\"어이 주인장! 있는 술 다 내와! 돈은 '누런 하늘(黃天)'께서 내주실 거다!\"");
+            Sleep(1500);
 
-            Console.ForegroundColor = zhangFeiColor;
-            Console.WriteLine("\n[???]");
-            Console.WriteLine("\"이보시오! 대장부가 나라를 위해 칼을 뽑을 생각은 않고, 울고 짜기만 할 셈이오?!\"");
-            Thread.Sleep(1000);
-            Console.WriteLine($"\"내 성은 장이요 이름은 비, 자는 익덕이라 하오!\"");
-            Thread.Sleep(1000);
-            Console.WriteLine("\"저기 술집에 가서 이야기나 합시다! 내가 돈은 좀 있소!\"");
-            Thread.Sleep(2000);
+            Console.ForegroundColor = narrator;
+            Console.WriteLine("\n머리에 누런 두건을 쓴 사내들이 주막을 점거합니다.");
+            Console.WriteLine("주막 주인 노인이 덜덜 떨며 그들 앞을 막아섭니다.");
+            Sleep(1500);
 
-            Console.Clear(); // 장면 전환 효과
-            Console.ForegroundColor = narratorColor;
-            Console.WriteLine("============== [장소: 탁현의 주막] ==============");
-            Thread.Sleep(1000);
-            Console.WriteLine("세 사람은 주막에 앉아 술잔을 기울입니다.");
-            Thread.Sleep(1000);
-            Console.WriteLine("그때, 붉은 얼굴에 긴 수염을 가진 위풍당당한 사내가 들어와 술을 주문합니다.");
-            Thread.Sleep(1500);
+            Console.ForegroundColor = enemyColor;
+            Console.WriteLine("\n[황건적 조장]");
+            Console.WriteLine("\"이 늙은이가 죽고 싶어 환장했나!\"");
+            Console.WriteLine("놈이 시퍼런 칼을 뽑아 노인을 겨눕니다.");
+            Sleep(1500);
 
-            Console.ForegroundColor = guanYuColor;
-            Console.WriteLine("\n[???]");
-            Console.WriteLine("\"주인장! 여기 술을 빨리 데워 주시오. 마시는 대로 투군하러 갈 것이오.\"");
-            Thread.Sleep(1500);
-
-            Console.ForegroundColor = liuBeiColor;
-            Console.WriteLine("\n[유비]");
-            Console.WriteLine("\"보아하니 호걸이신 듯한데, 우리와 합석하여 대사를 논함이 어떻겠소?\"");
-            Thread.Sleep(1500);
-
-            Console.ForegroundColor = guanYuColor;
-            Console.WriteLine("\n[관우]");
-            Console.WriteLine("\"반갑소. 내 성은 관이요 이름은 우, 자는 운장이라 하오.\"");
-            Thread.Sleep(1000);
-            Console.WriteLine("\"탐관오리를 죽이고 5년째 쫓기는 신세나, 이제 나라를 위해 싸우고자 하오.\"");
-            Thread.Sleep(2000);
-
-            Console.Clear();
-            Console.ForegroundColor = narratorColor;
-            Console.WriteLine("============== [장소: 장비의 집 뒤편, 복숭아 밭] ==============");
-            Thread.Sleep(1000);
-            Console.WriteLine("다음 날, 장비의 집 뒤편 복숭아 밭에는 꽃이 만발했습니다.");
-            Thread.Sleep(1000);
-            Console.WriteLine("검은 소와 흰 말을 제물로 바치고, 세 사람은 향을 피웁니다.");
-            Thread.Sleep(2000);
-
-            Console.ForegroundColor = ConsoleColor.Magenta; // 중요한 맹세
-            Console.WriteLine("\n[도원결의(桃園結義)]");
-            Thread.Sleep(1000);
-            Console.WriteLine("\"유비, 관우, 장비, 그리고 당신은 옆에서 그들을 지켜봅니다.\"");
-            Thread.Sleep(1000);
-            Console.WriteLine("\"비록 성은 다르오나 의형제를 맺어, 힘을 합쳐 곤경에 빠진 백성을 구하려 하오니..\"");
-            Thread.Sleep(1500);
-            Console.WriteLine("\"한날한시에 태어나지 못했어도, 한날한시에 죽기를 원하나이다!\"");
-            Thread.Sleep(1000);
-            Console.WriteLine("\"황천(皇天)과 후토(后土)는 굽어살펴 주소서!\"");
-            Thread.Sleep(3000);
-
-            Console.ResetColor();
+            // [선택의 순간]
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("\n==================================================");
-            Console.WriteLine("시스템: 유비, 관우, 장비와 합류 하였습니다.");
-            Console.WriteLine("시스템: 의용군 500명이 모였습니다.");
+            Console.WriteLine("[!운명의 선택!] 당신의 행동을 결정하십시오.");
+            Console.WriteLine("1. [무력] 당장 칼을 뽑아 놈들을 베어버린다.");
+            Console.WriteLine("2. [회유] 술값을 대신 내주며 말로 해결하려 한다.");
             Console.WriteLine("==================================================");
-            Thread.Sleep(2000);
-
-            Console.Clear();
-            Console.ForegroundColor = narratorColor;
-            Console.WriteLine("며칠 뒤, 유주 태수 유언의 구원 요청이 도착했습니다.");
-            Thread.Sleep(1000);
-            Console.WriteLine("황건적의 장수 '정원지'가 5만의 군사를 이끌고 쳐들어왔습니다.");
-            Thread.Sleep(1000);
-            Console.WriteLine("대흥산 아래, 누런 두건을 쓴 도적 떼가 개미떼처럼 깔려 있습니다.");
-            Thread.Sleep(2000);
-
-            Console.ForegroundColor = zhangFeiColor;
-            Console.WriteLine("\n[장비]");
-            Console.WriteLine("\"형님! 저기 쥐새끼 같은 놈들이 보입니다! 내 당장 가서 목을 따오겠소!\"");
-            Thread.Sleep(1000);
+            Console.Write("선택 >> ");
             
+            string choice = Console.ReadLine() ?? "1";
+
+            // [전개]
             Console.ForegroundColor = playerColor;
             Console.WriteLine($"\n[{player.Name}]");
-            Console.Write("선택지를 입력하세요 (1. 형님 침착하게 가야합니다! / 2. 같이 쓸어버리시죠!): ");
-            Console.Write("선택 >>");
-            string choice = Console.ReadLine() ?? "1";
-            
-            if (choice == "2")
+            if (choice == "2") Console.WriteLine("\"이보시오, 술값은 내가 낼 테니 그 칼 거두시오.\"");
+            else Console.WriteLine("\"그 더러운 칼 치우지 못해?!\"");
+            Sleep(1000);
+
+            Console.ForegroundColor = enemyColor;
+            Console.WriteLine("\n[황건적 조장]");
+            Console.WriteLine("\"뭐야? 웬 놈이냐! 네놈도 저 늙은이와 함께 저승으로 보내주마!\"");
+            Sleep(1000);
+
+            // [첫 번째 동료 등장]
+            Console.ForegroundColor = allyColor;
+            Console.WriteLine("\n[???]");
+            Console.WriteLine("\"여럿이서 하나를 덤비다니, 부끄러운 줄도 모르는 놈들이군!\"");
+            Sleep(1000);
+            Console.WriteLine("구석에서 삿갓을 쓴 건장한 사내가 일어나 당신의 등 뒤를 지킵니다.");
+            Sleep(1500);
+
+            Console.WriteLine("\n[방랑 무인]");
+            Console.WriteLine("\"형씨, 등 뒤는 내가 맡겠소. 한번 놀아봅시다!\"");
+            Sleep(2000);
+
+            //[실제 전투 연결]
+            //튜토리얼용 적 생성
+            Unit tutorialEnemy = new Unit("황건적 조장", JobType.Bandit, 30, 0, 5, 0, 50);
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\n>>> 전투가 시작됩니다!");
+            Console.ResetColor();
+            Sleep(1000);
+
+            //Program의 전투 엔진 호출
+            bool isWin = Program.StartBattle(player, tutorialEnemy);
+
+            if(isWin)
             {
-                Console.WriteLine("\n>>> 당신은 장비와 함께 적진으로 돌격합니다!");
+                Console.ForegroundColor = allyColor;
+                Console.WriteLine("\n[방랑 무인]");
+                Console.WriteLine("\"후우.. 솜씨가 제법이군. 내 이름은 '단복'이라 하오.\"");
+                Sleep(1000);
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine("\n[시스템] 첫 번째 동료 [단복(협객)]과 인연을 맺었습니다.");
+                Sleep(2000);
             }
 
             else
             {
-                Console.WriteLine("\n>>> 신중하게 접근하려 했으나, 적이 먼저 공격해옵니다!");
+                //튜토리얼에서 져..? 그래도.. 봐준다.
+                Console.WriteLine("\n[방랑 무인] \"쳇, 오늘은 운이 없군. 일단 피합시다!\"");
             }
-            
-            Thread.Sleep(1000);
-            
 
-            // --[전투 발생!] --
-            // 1. 적 생성
-            Unit enemy = new Unit("황건적 등무", JobType.Infantry, 80, 0, 15, 2, 100);
-            
-            // 2. Program에 있는 전투 엔진 가동
-            bool isWin = Program.StartBattle(player!, enemy);
-            
-            // 3. 결과에 따른 분기
-            if (isWin)
+            Console.ResetColor();
+        }
+
+
+        //[마을 로직] > 추후 개선 예정
+        
+        // --- [2] 본진 (마을) 시스템 ---
+        void EnterBase()
+        {
+            while (true)
             {
-                Console.WriteLine("\n[승리] 황건적 부장, 등무가 목이 날아갔습니다. 당신의 명성이 상승합니다!");
-                // 다음 챕터...
-            }
-            else
-            {
-                Console.WriteLine("\n[패배] 부상을 입고 퇴각했습니다... (게임 오버)");
-                Environment.Exit(0);
+                Console.Clear();
+                Console.WriteLine("======== [⛺ 본진] ========");
+                Console.WriteLine($"현재 위치 : 낙양 근교 (소속: {player!.Faction})");
+                Console.WriteLine("1. ⚔️ 전장으로 (반복 사냥)");
+                Console.WriteLine("2. 🛌 막사 휴식 (병력 및 기력 회복)");
+                Console.WriteLine("3. 📊 장수 정보 확인");
+                Console.WriteLine("4. 🎒 가방 열기");
+                Console.WriteLine("5. 🚪 다음 스토리 진행 (출진)");
+                Console.WriteLine("====================");
+                Console.Write("무엇을 하시겠소? >> ");
+                
+                string input = Console.ReadLine() ?? "";
+
+                if (input == "1")
+                {
+                    // [수정] 사냥터 입장 -> 랜덤 적 생성 후 전투
+                    Console.WriteLine("주변의 잔당을 소탕하러 갑니다...");
+                    Thread.Sleep(1000);
+                    
+                    // 랜덤 적 생성 (연습용 황건적)
+                    Unit dummyEnemy = new Unit("황건적 잔당", JobType.Bandit, 50, 0, 10, 1, 30);
+                    
+                    bool win = Program.StartBattle(player!, dummyEnemy);
+                    if (win) Console.WriteLine("승리하여 복귀했습니다.");
+                    else { Console.WriteLine("부상을 입고 복귀했습니다."); player.Hp = 1; } // 죽지 않게 처리
+                }
+                else if (input == "2")
+                {
+                    Hotel(); // 여관(막사) 입장
+                }
+                else if (input == "3")
+                {
+                    State(); // 상태창 열기
+                }
+                else if (input == "4")
+                {
+                    Open_Inventory(); // 가방 열기
+                }
+                else if (input == "5")
+                {
+                    Console.WriteLine("군비를 갖추고 다음 전장으로 떠납니다!");
+                    Thread.Sleep(1000);
+                    break; // 마을 루프 탈출 -> 다음 챕터로 이동
+                }
             }
         }
+
+        // --- 휴식 기능 ---
+        void Hotel()
+        {
+            Console.WriteLine("\n[군수관]");
+            Console.WriteLine("\"장군, 병력과 기력을 회복하시겠습니까? (비용: 20냥)\"");
+            Console.WriteLine($"보유 군자금: {player!.Money}냥");
+            Console.Write("1. 휴식한다  2. 돌아간다 >> ");
+            
+            string input = Console.ReadLine() ?? "";
+
+            if (input == "1")
+            {
+                if (player.Money >= 20)
+                {
+                    player.Money -= 20;
+                    player.Heal();
+                    Console.WriteLine("\n💤 막사에서 편안하게 휴식을 취했습니다.");
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    Console.WriteLine("\n\"장군, 군자금이 부족합니다.\"");
+                    Thread.Sleep(1000);
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n돌아갑니다.");
+            }
+        }
+            
+        // --- 상태창 기능 ---
+        void State()
+        {
+            Console.Clear();
+            Console.WriteLine($"\n [ {player!.Name}의 상태 ]");
+            Console.WriteLine($"소속 : {player.Faction} | 병과 : {player.Job}");
+            Console.WriteLine($"❤️  병력 : {player.Hp} / {player.MaxHp}");
+            Console.WriteLine($"💧  기력 : {player.Mp} / {player.MaxMp}");
+            Console.WriteLine($"⚔️  무력 : {player.Atk}");
+            Console.WriteLine($"🛡️  통솔 : {player.Def}");
+            Console.WriteLine($"💰  군자금 : {player.Money}");
+            Console.WriteLine("\n(엔터 키를 누르면 돌아갑니다.)");
+            Console.ReadLine();
+        }
+
+        // --- 인벤토리 기능 ---
+        void Open_Inventory()
+        {
+            Console.WriteLine("\n=== [ 🎒 군수품 목록 ] ===");
+
+            if (player!.Inventory.Count == 0)
+            {
+                Console.WriteLine("(비어있음)");
+            }
+            else
+            {
+                for (int i = 0; i < player.Inventory.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {player.Inventory[i].Name}");
+                }
+            }
+            
+            Console.WriteLine("0. 취소");
+            Console.Write("사용할 아이템 번호 >> ");
+            
+            // 숫자가 아니면 0으로 처리해서 에러 방지
+            int.TryParse(Console.ReadLine(), out int itemNum);
+            
+            if (itemNum > 0 && itemNum <= player.Inventory.Count)
+            {
+                player.UseItem(itemNum - 1);
+            }
+            else
+            {
+                Console.WriteLine("취소했습니다.");
+            }
+            Thread.Sleep(500);
+        }
+        
+        
+
     }
 }

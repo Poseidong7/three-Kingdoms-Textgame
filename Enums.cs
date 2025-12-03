@@ -10,6 +10,9 @@ namespace TextRPG
         Archer,     // 궁병 🏹 (창병에 강함)
         Spearman,   // 창병 🔱 (기병에 강함)
         Tactician,   // 책사 📜 (상성 무시)
+
+        //적 직업
+        Bandit       //도적(황건적용)
     }
 
     //세력 (나중에 스토리 분기 때 사용)

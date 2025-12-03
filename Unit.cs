@@ -12,10 +12,14 @@ namespace TextRPG
         public JobType Job;     // 병과 (맹장 / 책사)
         public Faction MyFaction;   // 소속 세력(위/촉/오/재야)
 
-        public int Hp;      // 병력 (체력)
-        public int MaxHp;
-        public int Mp;      // 기력 (마나)
-        public int MaxMp;
+        //[신규] 레벨 시스템
+        public int Level;   //현재 레벨
+        public int Exp;     //현재 경험치
+        public int MaxExp;  //레벨업에 필요한 경험치
+        
+
+        public int Hp; public int MaxHp;     // 병력 (체력)
+        public int Mp; public int MaxMp;      // 기력 (마나)
         public int Atk;     // 무력/지력 (공격력)
         public int Def;     // 통솔 (방어력)
         public int Money;   // 군자금(돈)
@@ -35,10 +39,15 @@ namespace TextRPG
             Name = name;
             Job = job;
             MyFaction = Faction.None; //기본은 재야
-            MaxHp = hp;
-            Hp = hp;
-            MaxMp = mp;
-            Mp = mp;
+
+            //[신규] 레벨 초기화 (1레벨, 경험치 0, 필요경험치 100)
+            Level = 1;
+            Exp = 0;
+            MaxExp = 100;
+
+
+            MaxHp = hp; Hp = hp;
+            MaxMp = mp; Mp = mp;
             Atk = attack;
             Def = defense;
             Money = money;
@@ -46,6 +55,71 @@ namespace TextRPG
         }
 
         // [3] 행동(매서드)
+        //[신규][핵심] 경험치 획득 & 레벨업 로직
+        public void GainExp(int amount)
+        {
+            Exp += amount;
+            Console.WriteLine($"✨ {Name}은(는) {amount}의 공적(EXP)을 세웠다! ({Exp}/{MaxExp})");
+
+            //경험치통이 꽉 찼으면
+            while (Exp >= MaxExp)
+            {
+                LevelUp();
+            }
+        } 
+
+
+        //[신규][핵심] 레벨업 효과 (각 병과별 차별화)
+        void LevelUp()
+        {
+            Exp -= MaxExp; //남은 경험치는 다음 레벨로 이월
+            Level++;       //레벨 증가
+            MaxExp += 50 + (Level * 10);  //레벨이 오를수록 필요 경험치 대폭 증가
+
+            //증가량 변수
+            int incHp = 0, incMp = 0, incAtk = 0, incDef = 0;
+
+            //병과별 성작폭 설정(밸런스 패치 여기서 하시면 됩니다.)
+            switch(Job)
+            {
+                case JobType.Cavalry: //기병 : 공격/체력 균형
+                    incHp = 25; incMp = 5; incAtk = 4; incDef = 2;
+                    break;
+                case JobType.Infantry: //보병 : 체력/방어 특화(탱커)
+                    incHp = 40; incMp = 5; incAtk = 2; incDef = 4;
+                    break;
+                case JobType.Archer: //궁병 : 공격 올인(유리대포)
+                    incHp = 15; incMp = 10; incAtk = 6; incDef = 1;
+                    break;
+                case JobType.Spearman: //창병 : 방어/체력 준수 (딜탱)
+                    incHp = 30; incMp = 5; incAtk = 3; incDef = 3;
+                    break;
+                case JobType.Tactician: //책사 : 기력/공격(지력) 특화
+                    incHp = 10; incMp = 30; incAtk = 5; incDef = 1;
+                    break;
+                default: //무직/기타
+                    incHp = 20; incMp = 10; incAtk = 2; incDef = 2;
+                    break;
+            }
+
+            //실제 스탯 반영
+            MaxHp += incHp;
+            MaxMp += incMp;
+            Atk += incAtk;
+            Def += incDef;
+
+            //레벨업 시 회복 서비스
+            Hp = MaxHp;
+            Mp = MaxMp;
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"\n🎉 [승진!] {Name} 장군이 Lv.{Level}로 승급했습니다! 🎉");
+            Console.WriteLine($"   (병력+{incHp}, 기력+{incMp}, 무력+{incAtk}, 통솔+{incDef})\n");
+            Console.ResetColor();
+            Thread.Sleep(1000);
+            
+        }
+
         //[핵심] 상성 데미지 보정 함수(캡슐화)
         // 외부에는 안 보여주고, Attack 함수 안에서만 사용.
         public float GetTypeMultiplier(JobType targetJob)
